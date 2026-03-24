@@ -144,6 +144,93 @@ npm run start
 - 代理模型列表请求
 - 代理 AI 结构化输出请求
 
+## Docker 部署
+
+本项目提供开箱即用的 Docker 部署文件：
+
+- `Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+
+### 环境变量
+
+在项目根目录创建 `.env`：
+
+```env
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_API_KEY=sk-xxxx
+OPENAI_DEFAULT_MODEL=gpt-5.4
+PORT=9999
+```
+
+### 当前编排
+
+当前 `docker-compose.yml` 内容等价于：
+
+```yaml
+services:
+  aitaoist:
+    build: .
+    container_name: aitaoist
+    restart: unless-stopped
+    ports:
+      - "${PORT:-9999}:9999"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 9999
+```
+
+### 启动方式
+
+在项目根目录执行：
+
+```bash
+docker compose up -d --build
+```
+
+说明：
+
+- Docker 会基于项目目录中的 `Dockerfile` 进行本地构建
+- 默认使用 `node:25.8.0` 作为构建与运行环境
+- 容器内固定监听 `9999`，宿主机端口由 `.env` 中的 `PORT` 控制
+- API Key 仍只保存在服务端容器环境中，不会暴露到前端
+
+### 访问方式
+
+本地部署完成后可访问：
+
+```text
+http://localhost:9999
+```
+
+如果部署在服务器上，也可访问：
+
+```text
+http://服务器IP:9999
+```
+
+### 常用命令
+
+查看日志：
+
+```bash
+docker compose logs -f
+```
+
+停止服务：
+
+```bash
+docker compose down
+```
+
+重新构建并启动：
+
+```bash
+docker compose up -d --build
+```
+
 ## 可用脚本
 
 ```bash
